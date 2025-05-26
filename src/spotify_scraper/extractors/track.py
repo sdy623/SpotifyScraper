@@ -21,6 +21,8 @@ Example:
 import logging
 from typing import Any, Dict, Optional
 
+from bs4 import BeautifulSoup
+
 from spotify_scraper.browsers.base import Browser
 from spotify_scraper.core.exceptions import ScrapingError, URLError
 from spotify_scraper.core.types import TrackData
@@ -147,10 +149,18 @@ class TrackExtractor:
 
             # Get page content from embed URL
             page_content = self.browser.get_page_content(embed_url)
-
+            page2_content = self.browser.get_page_content(url)
             # Parse track information
-            track_data = extract_track_data_from_page(page_content)
+            soup = BeautifulSoup(page2_content, "html.parser")
+            play_count = soup.select_one("span.e-9911-text:nth-child(9)")
 
+            track_data = extract_track_data_from_page(page_content)
+            # Add play count if available
+            if play_count:
+                play_count = play_count.text.strip()
+                track_data["play_count"] = int(play_count.replace(',', ''))
+            else:
+                track_data["play_count"] = "Unknown"
             # If we got valid data, return it
             if track_data and not track_data.get("ERROR"):
                 logger.debug(
