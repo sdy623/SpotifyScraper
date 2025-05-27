@@ -32,6 +32,7 @@ from spotify_scraper.utils.url import (
     extract_id,
     validate_url,
 )
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -149,11 +150,12 @@ class TrackExtractor:
 
             # Get page content from embed URL
             page_content = self.browser.get_page_content(embed_url)
+            time.sleep(1.8)  # Allow time for page to load fully
             page2_content = self.browser.get_page_content(url)
             # Parse track information
             soup = BeautifulSoup(page2_content, "html.parser")
             play_count = soup.select_one("span.e-9911-text:nth-child(9)")
-
+            print(f"Play count: {play_count}")
             track_data = extract_track_data_from_page(page_content)
             # Add play count if available
             if play_count:
