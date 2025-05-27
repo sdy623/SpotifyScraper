@@ -78,6 +78,11 @@ class SeleniumBrowser(Browser):
         try:
             logger.debug("Navigating to %s", url)
             self.driver.get(url)
+            if url.startswith("https://open.spotify.com/track"):
+                # Wait for the page to load completely
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, 'span[data-testid="playcount"]'))
+                )
             return self.driver.page_source
         except WebDriverException as e:
             logger.error("Failed to navigate to %s: %s", url, e)
