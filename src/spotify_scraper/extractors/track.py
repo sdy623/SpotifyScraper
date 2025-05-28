@@ -154,7 +154,7 @@ class TrackExtractor:
             page2_content = self.browser.get_page_content(url)
             # Parse track information
             soup = BeautifulSoup(page2_content, "html.parser")
-            play_count = soup.select_one("span.e-9911-text:nth-child(9)")
+            play_count = soup.select_one("span[data-testid=\"playcount\"]")
             track_data = extract_track_data_from_page(page_content)
             # Add play count if available
             if play_count:
