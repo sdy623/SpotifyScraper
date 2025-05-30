@@ -154,6 +154,7 @@ class TrackExtractor:
             page2_content = self.browser.get_page_content(url)
             # Parse track information
             soup = BeautifulSoup(page2_content, "html.parser")
+            album_data = soup.select_one("span.e-9921-text:nth-child(3)")
             play_count = soup.select_one("span[data-testid=\"playcount\"]")
             track_data = extract_track_data_from_page(page_content)
             # Add play count if available
@@ -162,6 +163,11 @@ class TrackExtractor:
                 track_data["play_count"] = int(play_count.replace(',', ''))
             else:
                 track_data["play_count"] = "Unknown"
+            if album_data:
+                track_data["album"] = album_data.text.strip()
+            else:
+                pass
+            # Add track ID and name for consistency
             if track_data["play_count"] == "Unknown":
                 logger.warning("Play count not found for track: %s", track_id)
             # If we got valid data, return it
