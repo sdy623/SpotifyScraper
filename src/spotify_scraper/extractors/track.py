@@ -164,8 +164,9 @@ class TrackExtractor:
             else:
                 track_data["play_count"] = "Unknown"
             if album_data:
-                track_data["album"] = album_data.text.strip()
+                track_data["album_name"] = album_data.text.strip()
             else:
+                logger.warning("Album name not found for track: %s", track_id)
                 pass
             # Add track ID and name for consistency
             if track_data["play_count"] == "Unknown":
