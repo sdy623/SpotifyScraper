@@ -7,6 +7,7 @@ dynamic web content.
 
 try:
     from selenium import webdriver
+    #import undetected_chromedriver as webdriver
     from selenium.common.exceptions import TimeoutException, WebDriverException
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
@@ -48,15 +49,14 @@ class SeleniumBrowser(Browser):
 
         if driver is None:
             # Create a new Chrome driver
-            options = webdriver.ChromeOptions()
+            options = webdriver.FirefoxOptions()
             options.add_argument("--headless")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
-            options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1920,1080")
 
             try:
-                self.driver = webdriver.Chrome(options=options)
+                self.driver = webdriver.Firefox(options=options)
             except WebDriverException as e:
                 logger.error("Failed to create Chrome driver: %s", e)
                 raise BrowserError(f"Failed to create Chrome driver: {e}") from e
@@ -80,9 +80,7 @@ class SeleniumBrowser(Browser):
             self.driver.get(url)
             if url.startswith("https://open.spotify.com/track"):
                 # Wait for the page to load completely
-                WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, 'span[data-testid="playcount"]'))
-                )
+                self.wait_for_element('span[data-testid="playcount"]')
             return self.driver.page_source
         except WebDriverException as e:
             logger.error("Failed to navigate to %s: %s", url, e)
